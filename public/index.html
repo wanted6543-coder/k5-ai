@@ -150,7 +150,7 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
  .drawer-head img{margin-bottom:14px}
 .drawer-head strong{display:block;font-size:20px;letter-spacing:-.04em}
 .drawer-head small{display:block;color:var(--muted);font-size:13px;margin-top:4px;font-weight:400}
-.drawer nav{display:flex;flex-direction:column;gap:2px;overflow:auto}
+.drawer nav{display:flex;flex-direction:column;gap:2px}
 .drawer nav button{
   display:flex;align-items:center;gap:12px;text-align:left;border:0;background:transparent;
   border-radius:14px;padding:12px 12px;min-height:48px;color:var(--text);font-weight:500;
@@ -158,6 +158,17 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
 .drawer nav button .ico{width:28px;text-align:center;font-size:16px}
 .drawer nav button.active{background:rgba(0,163,226,.12);color:var(--text)}
 .drawer-foot{margin-top:auto;padding:12px}
+.chat-tools{padding:0 4px 10px}
+.chat-tools .new-chat{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:14px}
+.chat-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:8px 12px 6px}
+.chat-list{display:flex;flex-direction:column;gap:2px;overflow:auto;flex:1;min-height:80px;max-height:38dvh;padding:0 4px 10px}
+.chat-item{display:flex;align-items:center;gap:4px;border-radius:14px;padding:2px 2px 2px 4px}
+.chat-item.active{background:rgba(0,163,226,.12)}
+.chat-item .open{flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:10px 8px;min-height:44px;border-radius:12px;font-weight:500}
+.chat-item .open small{display:block;color:var(--muted);font-size:11px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-item .open span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-item .icon-btn{width:36px;height:36px;color:var(--muted)}
+.drawer-sep{height:1px;background:var(--line);margin:8px 12px}
 .empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:24px 24px 12px;animation:rise .45s ease both;
@@ -236,6 +247,38 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .msg.user .bubble{max-width:72%}
 }
+
+.account-btn{
+  flex:none;max-width:34vw;border:1px solid var(--line);background:var(--elev);
+  border-radius:999px;padding:8px 12px;min-height:36px;font-size:13px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.auth-scrim{
+  position:fixed;inset:0;z-index:80;background:rgba(6,8,12,.55);
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:12px 12px calc(16px + env(safe-area-inset-bottom));
+  backdrop-filter:blur(10px) saturate(1.2);
+}
+@media(min-width:720px){.auth-scrim{align-items:center}}
+.auth-card{
+  width:min(100%,420px);background:var(--bg-soft);border:1px solid var(--line);
+  border-radius:26px;padding:22px 20px 18px;box-shadow:var(--shadow);animation:rise .35s ease both;
+}
+.auth-card h2{margin:0 0 4px;font-size:24px;letter-spacing:-.04em}
+.auth-card .lead{color:var(--muted);margin:0 0 14px;font-size:14px}
+.auth-card label.tiny{display:block;margin:12px 0 6px}
+.auth-err{color:var(--danger);font-size:13px;min-height:1.2em;margin:10px 0 0}
+.auth-close{position:absolute;top:10px;right:10px}
+.auth-card{position:relative}
+.account-box{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.account-box .who{font-size:13px;color:var(--muted);padding:0 4px}
+.migrate-banner{
+  margin:8px 16px 0;padding:12px 14px;border-radius:16px;
+  background:rgba(0,163,226,.10);border:1px solid rgba(0,163,226,.25);
+}
+.migrate-banner p{margin:0 0 10px;font-size:14px}
+.migrate-banner .form-actions{margin-top:0}
+.chat-list .empty-chats{color:var(--muted);font-size:13px;padding:10px 12px}
 </style>
 </head>
 <body>
@@ -247,6 +290,7 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
   <a class="brand-link" href="#" onclick="go('chat');return false">
     <img class="logo-dark" src="/brand/natcar-logo.svg" alt="NATCAR"><img class="logo-light" src="/brand/natcar-logo-color.svg" alt="NATCAR">
   </a>
+  <button class="account-btn" id="accountBtn" type="button" onclick="openAuth()">Войти</button>
   <div id="connection" class="status"><i></i>Проверка</div>
 </header>
 <div id="wakeBanner" class="wake-banner">Сервер просыпается, обычно это занимает до минуты…</div>
@@ -256,10 +300,16 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
   <div class="drawer-head">
     <img class="logo-dark" src="/brand/natcar-logo.svg" alt="NATCAR"><img class="logo-light" src="/brand/natcar-logo-color.svg" alt="NATCAR">
     <strong>K5 AI</strong>
-    <small>Помощник водителя КАМАЗ К5</small>
+    <small>Напарник по КАМАЗ К5</small>
   </div>
+  <div class="chat-tools">
+    <button class="primary new-chat" onclick="newChat()">＋ Новый чат</button>
+  </div>
+  <div class="chat-label">Чаты</div>
+  <div class="chat-list" id="chatList"></div>
+  <div class="drawer-sep"></div>
   <nav>
-    <button data-view="chat" class="active" onclick="go('chat')"><span class="ico">✦</span>Чат</button>
+    <button data-view="chat" class="active" onclick="go('chat')"><span class="ico">✦</span>Текущий чат</button>
     <button data-view="home" onclick="go('home')"><span class="ico">⌂</span>Обзор</button>
     <button data-view="faults" onclick="go('faults')"><span class="ico">⚠</span>Ошибки и системы</button>
     <button data-view="winter" onclick="go('winter')"><span class="ico">❄</span>Зимнее вождение</button>
@@ -269,21 +319,23 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
     <button data-view="ops" onclick="go('ops')"><span class="ico">⛽</span>Учёт ТО и топлива</button>
   </nav>
   <div class="drawer-foot">
+    <div class="account-box" id="accountBox"></div>
     <button class="secondary" style="width:100%" onclick="toggleTheme()">Сменить тему</button>
   </div>
 </aside>
 
 <main>
 <section id="chat" class="view active">
+  <div id="migrateBanner" class="migrate-banner hidden"></div>
   <div class="empty" id="emptyState">
     <img class="mark" src="/brand/natcar-mark.svg" alt="">
-    <h1>Чем помочь на рейсе?</h1>
-    <p>Ищу ответы в открытых источниках и опыте водителей КАМАЗ К5. Официальные мануалы — только как проверка.</p>
+    <h1>Ну что, напарник?</h1>
+    <p>Спроси как у своего по К5 — коротко и по делу, без канцелярита.</p>
     <div class="chips">
-      <button onclick="preset('Что обычно пишут водители КАМАЗ К5, если горит жёлтая лампа EBS?')">Жёлтая лампа EBS</button>
-      <button onclick="preset('Как водители К5 готовят машину к зимнему рейсу? Практические советы, не только регламент.')">Подготовка к зиме</button>
-      <button onclick="preset('Как на практике тормозить на длинном спуске с гружёным полуприцепом на КАМАЗ К5?')">Спуск с грузом</button>
-      <button onclick="preset('Какой реальный расход топлива у КАМАЗ К5 на трассе с фурой? Что пишут водители.')">Расход на трассе</button>
+      <button onclick="preset('Горит жёлтая лампа EBS. Что проверить на стоянке?')">Жёлтая лампа EBS</button>
+      <button onclick="preset('Как подготовить КАМАЗ К5 к зимнему рейсу?')">Подготовка к зиме</button>
+      <button onclick="preset('Как тормозить на длинном спуске с гружёным полуприцепом на К5?')">Спуск с грузом</button>
+      <button onclick="preset('Какой расход у КАМАЗ К5 на трассе с фурой, если ехать спокойно?')">Расход на трассе</button>
     </div>
   </div>
   <div class="chat-stream hidden" id="chatbox"></div>
@@ -313,13 +365,13 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
     <img class="wordmark logo-dark" src="/brand/natcar-logo.svg" alt="NATCAR"><img class="wordmark logo-light" src="/brand/natcar-logo-color.svg" alt="NATCAR">
     <div class="eyebrow">Помощник водителя</div>
     <h1>На связи в рейсе.</h1>
-    <p>Системы КАМАЗ К5, предупреждения, учёт топлива и ТО. Чат ищет ответы в первую очередь в открытых источниках.</p>
+    <p>Системы КАМАЗ К5, предупреждения, учёт топлива и ТО. Спроси как у напарника — коротко и по делу.</p>
     <button class="primary" onclick="go('chat')" style="margin-top:16px">Открыть чат</button>
   </div>
   <div class="notice"><b style="color:var(--text)">Безопасность прежде всего.</b> Не пользуйтесь приложением во время движения. При красном предупреждении, изменении торможения или рулевого управления остановитесь в безопасном месте.</div>
   <h2>Разделы</h2>
   <div class="grid">
-    <button class="card tile" onclick="go('chat')"><span class="ico">✦</span><b>ИИ-чат</b><small>Вопросы по опыту водителей и открытым источникам</small></button>
+    <button class="card tile" onclick="go('chat')"><span class="ico">✦</span><b>ИИ-чат</b><small>Спроси как у напарника — коротко и по делу</small></button>
     <button class="card tile" onclick="go('faults')"><span class="ico">⚠️</span><b>Ошибки и системы</b><small>EBS, ABS, ESP и другие предупреждения</small></button>
     <button class="card tile" onclick="go('winter')"><span class="ico">❄️</span><b>Зимнее вождение</b><small>Сцепление, дистанция, торможение</small></button>
     <button class="card tile" onclick="go('truck')"><span class="ico">🚛</span><b>Мой КАМАЗ</b><small>Профиль конкретной машины</small></button>
@@ -335,10 +387,10 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
   <p>Сначала симптомы, затем опыт водителей и справочник. Приложение не считывает ЭБУ.</p>
   <div class="notice">Не отключайте датчики и не обходите защитные системы.</div>
   <div class="list">
-    <div class="item"><span class="ico">🛑</span><div><h3>Тормозная система / EBS</h3><p>Предупреждения, давление, эффективность торможения. При изменении торможения — безопасная остановка и сервис.</p><button class="ghost" onclick="preset('По опыту водителей КАМАЗ К5: что обычно значит жёлтая или красная лампа EBS и что проверить на стоянке?')">Разобрать симптом</button></div></div>
-    <div class="item"><span class="ico">🛞</span><div><h3>ABS / ESP</h3><p>Системы предотвращения блокировки колёс и стабилизации. Нужны точный значок, цвет и условия появления.</p><button class="ghost" onclick="preset('Загорелась лампа ABS или ESP на КАМАЗ К5. Что пишут водители и что важно уточнить?')">Разобрать симптом</button></div></div>
-    <div class="item"><span class="ico">🌬️</span><div><h3>Пневматика</h3><p>Давление воздуха, утечки и сообщения системы. При недостаточном давлении не продолжайте движение.</p><button class="ghost" onclick="preset('Есть подозрение на проблему с давлением воздуха на К5. Какие безопасные действия и типичные причины по опыту водителей?')">Разобрать симптом</button></div></div>
-    <div class="item"><span class="ico">🔋</span><div><h3>Электрика</h3><p>Питание, предохранители и потребители. Перед проверками учитывайте руководство и безопасность.</p><button class="ghost" onclick="preset('Не работает электрический потребитель в кабине КАМАЗ К5. С чего водители обычно начинают поиск причины?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🛑</span><div><h3>Тормозная система / EBS</h3><p>Предупреждения, давление, эффективность торможения. При изменении торможения — безопасная остановка и сервис.</p><button class="ghost" onclick="preset('Горит лампа EBS. Что проверить на стоянке?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🛞</span><div><h3>ABS / ESP</h3><p>Системы предотвращения блокировки колёс и стабилизации. Нужны точный значок, цвет и условия появления.</p><button class="ghost" onclick="preset('Загорелась лампа ABS или ESP на К5. Что делать?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🌬️</span><div><h3>Пневматика</h3><p>Давление воздуха, утечки и сообщения системы. При недостаточном давлении не продолжайте движение.</p><button class="ghost" onclick="preset('Похоже, проблема с давлением воздуха на К5. Что проверить?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🔋</span><div><h3>Электрика</h3><p>Питание, предохранители и потребители. Перед проверками учитывайте руководство и безопасность.</p><button class="ghost" onclick="preset('В кабине К5 не работает электрика. С чего начать?')">Разобрать симптом</button></div></div>
   </div>
 </section>
 
@@ -386,7 +438,7 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
 <section id="manual" class="view">
   <div class="eyebrow">База знаний</div>
   <h1>Справочник</h1>
-  <p>Локальные памятки. В чате они используются только как вторичный ориентир.</p>
+  <p>Локальные памятки. Локальные памятки на телефоне, если нет сети.</p>
   <input id="search" class="field search" placeholder="Поиск по справочнику…" oninput="filterManual()">
   <div id="manualList" class="card">
     <p class="footnote" id="kbStatus">Загружаю локальную базу знаний…</p>
@@ -442,6 +494,35 @@ label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);fon
   </div>
 </section>
 </main>
+</div>
+
+<div id="authScrim" class="auth-scrim hidden" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-card" role="dialog" aria-labelledby="authTitle" aria-modal="true">
+    <button class="icon-btn auth-close" type="button" onclick="closeAuth()" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>
+    </button>
+    <h2 id="authTitle">Вход</h2>
+    <p class="lead" id="authLead">Логин или телефон и пароль — история чатов сохранится на сервере.</p>
+    <div class="tabs-inline" id="authTabs">
+      <button type="button" class="active" id="tabLogin" onclick="setAuthMode('login')">Войти</button>
+      <button type="button" id="tabRegister" onclick="setAuthMode('register')">Регистрация</button>
+    </div>
+    <form id="authForm" onsubmit="submitAuth(event)">
+      <label class="tiny" for="authLogin">Логин или телефон</label>
+      <input id="authLogin" class="field" name="username" autocomplete="username" placeholder="driver или +7 9…" required>
+      <label class="tiny" for="authPassword">Пароль</label>
+      <input id="authPassword" class="field" type="password" name="password" autocomplete="current-password" placeholder="Не менее 8 символов" required>
+      <div id="authPassword2Wrap" class="hidden">
+        <label class="tiny" for="authPassword2">Повтори пароль</label>
+        <input id="authPassword2" class="field" type="password" name="password2" autocomplete="new-password" placeholder="Ещё раз">
+      </div>
+      <p class="auth-err" id="authErr"></p>
+      <div class="form-actions">
+        <button class="primary" type="submit" id="authSubmit">Войти</button>
+      </div>
+    </form>
+    <button class="ghost" type="button" style="width:100%;margin-top:10px" onclick="closeAuth()">Продолжить без входа</button>
+  </div>
 </div>
 <script>
 const views=['home','chat','faults','winter','truck','photo','manual','ops'];
@@ -526,6 +607,7 @@ function setBubbleText(el, text, asMarkdown){
   else el.textContent=text;
 }
 function addSources(msg, sources){
+  return; // source chips hidden — answers should not cite origins
   if(!sources||!sources.length) return;
   const row=document.createElement('div'); row.className='sources';
   sources.slice(0,8).forEach(s=>{
@@ -776,7 +858,365 @@ function opsSummary(){
   return bits.join('. ');
 }
 
-let chatHistory=[];let pendingImage=null;let healthState={ready:false};let recognizing=false;
+
+const LOCAL_CHATS_KEY='k5ai-chats-v1';
+let currentUser=null;
+let chats=[];
+let currentChatId=null;
+let chatHistory=[];
+let pendingImage=null;let healthState={ready:false};let recognizing=false;
+let authMode='login';
+let migrateOffered=false;
+
+function localId(){return 'c_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);}
+function loadLocalStore(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(LOCAL_CHATS_KEY)||'{}');
+    const list=Array.isArray(raw.chats)?raw.chats:[];
+    return {chats:list, currentId:raw.currentId||(list[0]&&list[0].id)||null};
+  }catch(e){return {chats:[], currentId:null};}
+}
+function saveLocalStore(list, id){
+  localStorage.setItem(LOCAL_CHATS_KEY, JSON.stringify({chats:list, currentId:id||null}));
+}
+function localChatsCount(){return loadLocalStore().chats.filter(c=>Array.isArray(c.messages)&&c.messages.length).length;}
+function titleFromText(text){return String(text||'').replace(/\s+/g,' ').trim().slice(0,48)||'Новый чат';}
+function previewOf(chat){
+  if(chat.preview) return chat.preview;
+  const msgs=chat.messages||[];
+  const last=msgs[msgs.length-1];
+  return last?String(last.text||'').replace(/\s+/g,' ').trim().slice(0,60):'';
+}
+function fmtChatTime(value){
+  if(!value) return '';
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+}
+
+async function api(method, url, body){
+  const opts={method, credentials:'same-origin', headers:{Accept:'application/json'}};
+  if(body!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+  const r=await fetch(url, opts);
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error||'Ошибка запроса');
+  return data;
+}
+
+function updateAccountUI(){
+  const btn=document.getElementById('accountBtn');
+  const box=document.getElementById('accountBox');
+  if(currentUser){
+    btn.textContent=currentUser.login;
+    btn.setAttribute('aria-label','Аккаунт '+currentUser.login);
+    btn.onclick=()=>{toggleMenu(true);};
+    box.innerHTML=`<div class="who">Вы вошли как <b>${escapeHtml(currentUser.login)}</b></div>
+      <button class="secondary" style="width:100%" type="button" onclick="logoutUser()">Выйти</button>`;
+  }else{
+    btn.textContent='Войти';
+    btn.setAttribute('aria-label','Войти');
+    btn.onclick=()=>openAuth();
+    box.innerHTML=`<div class="who">Гость — чаты хранятся на этом устройстве</div>
+      <button class="primary" style="width:100%" type="button" onclick="openAuth()">Войти или зарегистрироваться</button>`;
+  }
+}
+
+function renderChatList(){
+  const host=document.getElementById('chatList');
+  host.replaceChildren();
+  if(!chats.length){
+    const p=document.createElement('p');
+    p.className='empty-chats';
+    p.textContent=currentUser?'Пока нет сохранённых чатов.':'Пока пусто — напиши или нажми «Новый чат».';
+    host.append(p);
+    return;
+  }
+  chats.forEach(chat=>{
+    const row=document.createElement('div');
+    row.className='chat-item'+(chat.id===currentChatId?' active':'');
+    const open=document.createElement('button');
+    open.type='button'; open.className='open';
+    open.innerHTML=`<span>${escapeHtml(chat.title||'Новый чат')}</span><small>${escapeHtml(previewOf(chat)||fmtChatTime(chat.updatedAt||chat.updated_at||chat.createdAt)||' ')}</small>`;
+    open.onclick=()=>openChat(chat.id);
+    const ren=document.createElement('button');
+    ren.type='button'; ren.className='icon-btn'; ren.setAttribute('aria-label','Переименовать');
+    ren.textContent='✎';
+    ren.onclick=ev=>{ev.stopPropagation();renameChatUI(chat.id);};
+    const del=document.createElement('button');
+    del.type='button'; del.className='icon-btn'; del.setAttribute('aria-label','Удалить');
+    del.textContent='✕';
+    del.onclick=ev=>{ev.stopPropagation();deleteChatUI(chat.id);};
+    row.append(open,ren,del);
+    host.append(row);
+  });
+}
+
+function renderThread(){
+  const box=document.getElementById('chatbox');
+  box.replaceChildren();
+  if(!chatHistory.length){
+    document.getElementById('emptyState').classList.remove('hidden');
+    box.classList.add('hidden');
+    return;
+  }
+  showChat();
+  for(const m of chatHistory){
+    const who=m.role==='user'?'user':'ai';
+    const {bubble}=addMessage(who);
+    if(who==='user') bubble.textContent=m.text;
+    else setBubbleText(bubble,m.text,true);
+  }
+}
+
+function showMigrateOffer(){
+  const n=localChatsCount();
+  const banner=document.getElementById('migrateBanner');
+  if(!currentUser || !n || migrateOffered){banner.classList.add('hidden');return;}
+  banner.classList.remove('hidden');
+  banner.innerHTML=`<p>На этом устройстве есть ${n} ${n===1?'чат':(n<5?'чата':'чатов')} без аккаунта. Перенести в «${escapeHtml(currentUser.login)}»?</p>
+    <div class="form-actions">
+      <button class="primary" type="button" onclick="migrateLocalChats()">Перенести</button>
+      <button class="secondary" type="button" onclick="dismissMigrate()">Не сейчас</button>
+    </div>`;
+}
+function dismissMigrate(){migrateOffered=true;document.getElementById('migrateBanner').classList.add('hidden');}
+
+async function migrateLocalChats(){
+  const local=loadLocalStore();
+  const payload=local.chats.filter(c=>Array.isArray(c.messages)&&c.messages.length);
+  try{
+    const data=await api('POST','/api/chats/migrate',{chats:payload});
+    chats=data.chats||[];
+    saveLocalStore([], null);
+    migrateOffered=true;
+    document.getElementById('migrateBanner').classList.add('hidden');
+    if(chats[0]) await openChat(chats[0].id);
+    else {currentChatId=null;chatHistory=[];renderThread();}
+    renderChatList();
+  }catch(err){
+    document.getElementById('migrateBanner').innerHTML=`<p>${escapeHtml(err.message)}</p>`;
+  }
+}
+
+async function loadSession(){
+  try{
+    const data=await api('GET','/api/me');
+    currentUser=data.user||null;
+  }catch(e){currentUser=null;}
+  updateAccountUI();
+  if(currentUser){
+    try{
+      const data=await api('GET','/api/chats');
+      chats=data.chats||[];
+      currentChatId=chats[0]?chats[0].id:null;
+      if(currentChatId) await openChat(currentChatId);
+      else {chatHistory=[];renderThread();}
+    }catch(e){chats=[];chatHistory=[];renderThread();}
+    showMigrateOffer();
+  }else{
+    const local=loadLocalStore();
+    chats=local.chats;
+    currentChatId=local.currentId && chats.some(c=>c.id===local.currentId)?local.currentId:(chats[0]&&chats[0].id)||null;
+    const cur=chats.find(c=>c.id===currentChatId);
+    chatHistory=cur&&Array.isArray(cur.messages)?cur.messages.map(m=>({role:m.role,text:m.text})):[];
+    renderThread();
+  }
+  renderChatList();
+}
+
+async function newChat(){
+  if(currentUser){
+    try{
+      const data=await api('POST','/api/chats',{title:'Новый чат'});
+      chats.unshift(data.chat);
+      currentChatId=data.chat.id;
+    }catch(err){
+      const {msg,bubble}=addMessage('ai');msg.classList.add('error');bubble.textContent=err.message;
+      return;
+    }
+  }else{
+    const chat={id:localId(),title:'Новый чат',createdAt:Date.now(),updatedAt:Date.now(),messages:[]};
+    chats.unshift(chat);
+    currentChatId=chat.id;
+    saveLocalStore(chats,currentChatId);
+  }
+  chatHistory=[];
+  renderChatList();
+  renderThread();
+  go('chat');
+}
+
+async function openChat(id){
+  currentChatId=id;
+  if(currentUser){
+    try{
+      const data=await api('GET','/api/chats/'+id);
+      chatHistory=(data.chat.messages||[]).map(m=>({role:m.role,text:m.text}));
+      const idx=chats.findIndex(c=>c.id===id);
+      if(idx>=0) chats[idx]={...chats[idx],...data.chat};
+    }catch(err){
+      const {msg,bubble}=addMessage('ai');msg.classList.add('error');bubble.textContent=err.message;
+      return;
+    }
+  }else{
+    const cur=chats.find(c=>c.id===id);
+    chatHistory=cur&&Array.isArray(cur.messages)?cur.messages.map(m=>({role:m.role,text:m.text})):[];
+    saveLocalStore(chats,currentChatId);
+  }
+  renderChatList();
+  renderThread();
+  go('chat');
+}
+
+async function renameChatUI(id){
+  const chat=chats.find(c=>c.id===id);
+  const next=prompt('Название чата', chat?chat.title:'');
+  if(next==null) return;
+  const title=titleFromText(next);
+  if(currentUser){
+    try{
+      const data=await api('PATCH','/api/chats/'+id,{title});
+      const idx=chats.findIndex(c=>c.id===id);
+      if(idx>=0) chats[idx]={...chats[idx],...data.chat};
+    }catch(err){alert(err.message);return;}
+  }else{
+    if(chat){chat.title=title;chat.updatedAt=Date.now();saveLocalStore(chats,currentChatId);}
+  }
+  renderChatList();
+}
+
+async function deleteChatUI(id){
+  if(!confirm('Удалить этот чат?')) return;
+  if(currentUser){
+    try{await api('DELETE','/api/chats/'+id);}catch(err){alert(err.message);return;}
+  }
+  chats=chats.filter(c=>c.id!==id);
+  if(currentChatId===id){
+    currentChatId=chats[0]?chats[0].id:null;
+    if(currentChatId) return openChat(currentChatId);
+    chatHistory=[];renderThread();
+  }
+  if(!currentUser) saveLocalStore(chats,currentChatId);
+  renderChatList();
+}
+
+function persistLocal(userText, reply){
+  let chat=chats.find(c=>c.id===currentChatId);
+  if(!chat){
+    chat={id:localId(),title:titleFromText(userText),createdAt:Date.now(),updatedAt:Date.now(),messages:[]};
+    chats.unshift(chat);
+    currentChatId=chat.id;
+  }
+  if(!chat.title || chat.title==='Новый чат') chat.title=titleFromText(userText);
+  chat.messages=chat.messages||[];
+  chat.messages.push({role:'user',text:userText},{role:'model',text:reply});
+  chat.updatedAt=Date.now();
+  chat.preview=reply;
+  const idx=chats.findIndex(c=>c.id===chat.id);
+  if(idx>0){chats.splice(idx,1);chats.unshift(chat);}
+  saveLocalStore(chats,currentChatId);
+  renderChatList();
+}
+
+function rememberServerChat(chatId, userText, reply){
+  if(chatId) currentChatId=chatId;
+  let chat=chats.find(c=>c.id===currentChatId);
+  if(!chat){
+    chat={id:currentChatId,title:titleFromText(userText),updatedAt:Date.now(),preview:reply};
+    chats.unshift(chat);
+  }else{
+    if(!chat.title || chat.title==='Новый чат') chat.title=titleFromText(userText);
+    chat.updatedAt=Date.now();
+    chat.preview=reply;
+    const idx=chats.findIndex(c=>c.id===chat.id);
+    if(idx>0){chats.splice(idx,1);chats.unshift(chat);}
+  }
+  renderChatList();
+}
+
+function setAuthMode(mode){
+  authMode=mode;
+  document.getElementById('tabLogin').classList.toggle('active',mode==='login');
+  document.getElementById('tabRegister').classList.toggle('active',mode==='register');
+  document.getElementById('authTitle').textContent=mode==='login'?'Вход':'Регистрация';
+  document.getElementById('authLead').textContent=mode==='login'
+    ?'Логин или телефон и пароль — история чатов подтянется с сервера.'
+    :'Создай аккаунт, и чаты с этого устройства можно будет сохранить.';
+  document.getElementById('authSubmit').textContent=mode==='login'?'Войти':'Создать аккаунт';
+  document.getElementById('authPassword2Wrap').classList.toggle('hidden',mode!=='register');
+  document.getElementById('authPassword').autocomplete=mode==='login'?'current-password':'new-password';
+  document.getElementById('authErr').textContent='';
+}
+function openAuth(mode){
+  if(mode) setAuthMode(mode);
+  document.getElementById('authScrim').classList.remove('hidden');
+  document.getElementById('authErr').textContent='';
+  setTimeout(()=>document.getElementById('authLogin').focus(),50);
+}
+function closeAuth(){document.getElementById('authScrim').classList.add('hidden');}
+
+async function submitAuth(ev){
+  ev.preventDefault();
+  const login=document.getElementById('authLogin').value;
+  const password=document.getElementById('authPassword').value;
+  const err=document.getElementById('authErr');
+  err.textContent='';
+  if(authMode==='register'){
+    const p2=document.getElementById('authPassword2').value;
+    if(password!==p2){err.textContent='Пароли не совпадают.';return;}
+  }
+  const btn=document.getElementById('authSubmit');
+  btn.disabled=true;
+  try{
+    if(authMode==='register'){
+      const local=loadLocalStore();
+      const payload=local.chats.filter(c=>Array.isArray(c.messages)&&c.messages.length);
+      const data=await api('POST','/api/auth/register',{login,password,chats:[]});
+      currentUser=data.user;
+      chats=data.chats||[];
+      closeAuth();
+      updateAccountUI();
+      if(payload.length){
+        migrateOffered=false;
+        if(!chats.length){currentChatId=null;chatHistory=[];renderThread();}
+        renderChatList();
+        showMigrateOffer();
+      }else{
+        currentChatId=chats[0]?chats[0].id:null;
+        if(currentChatId) await openChat(currentChatId);
+        else {chatHistory=[];renderThread();renderChatList();}
+      }
+    }else{
+      const data=await api('POST','/api/auth/login',{login,password});
+      currentUser=data.user;
+      chats=data.chats||[];
+      closeAuth();
+      updateAccountUI();
+      currentChatId=chats[0]?chats[0].id:null;
+      if(currentChatId) await openChat(currentChatId);
+      else {chatHistory=[];renderThread();}
+      renderChatList();
+      showMigrateOffer();
+    }
+  }catch(e){err.textContent=e.message;}
+  finally{btn.disabled=false;}
+}
+
+async function logoutUser(){
+  try{await api('POST','/api/auth/logout', {});}catch(e){}
+  currentUser=null;
+  const local=loadLocalStore();
+  chats=local.chats;
+  currentChatId=local.currentId && chats.some(c=>c.id===local.currentId)?local.currentId:(chats[0]&&chats[0].id)||null;
+  const cur=chats.find(c=>c.id===currentChatId);
+  chatHistory=cur&&Array.isArray(cur.messages)?cur.messages.map(m=>({role:m.role,text:m.text})):[];
+  updateAccountUI();
+  renderChatList();
+  renderThread();
+  toggleMenu(false);
+}
+
+
 function setStatus(text,kind){
   const c=document.getElementById('connection');
   c.innerHTML='<i></i>'+text;c.className='status '+(kind||'');
@@ -848,7 +1288,7 @@ function toggleMic(){
 async function readSSE(response, onDelta, onSources){
   const reader=response.body.getReader();
   const decoder=new TextDecoder();
-  let buf='', full='', error=null, doneReply=null, sources=[];
+  let buf='', full='', error=null, doneReply=null, sources=[], chatId=null;
   while(true){
     const {value,done}=await reader.read();
     if(done) break;
@@ -861,10 +1301,11 @@ async function readSSE(response, onDelta, onSources){
       if(data.delta){full+=data.delta;onDelta(full);}
       if(data.reply){doneReply=data.reply;onDelta(data.reply);}
       if(data.sources){sources=data.sources;if(onSources)onSources(sources);}
+      if(data.chatId) chatId=data.chatId;
       if(data.error) error=data.error;
     }
   }
-  return {text:(doneReply||full).trim(), error, sources};
+  return {text:(doneReply||full).trim(), error, sources, chatId};
 }
 
 async function send(){
@@ -883,7 +1324,8 @@ async function send(){
       message:q||'Проанализируй приложенную фотографию приборной панели КАМАЗ К5. Определи только то, что действительно видно.',
       history:chatHistory.slice(-10),
       image:imageToSend?{data:imageToSend.data,mimeType:imageToSend.mimeType}:null,
-      opsSummary:opsSummary()||null
+      opsSummary:opsSummary()||null,
+      chatId:currentChatId
     };
     const ctrl=new AbortController();
     const timer=setTimeout(()=>ctrl.abort(),90000);
@@ -901,23 +1343,24 @@ async function send(){
       throw new Error(data.error||'Сервер временно недоступен.');
     }
     const ctype=r.headers.get('content-type')||'';
-    let reply='', sources=[];
+    let reply='', sources=[], savedChatId=currentChatId;
     if(ctype.includes('text/event-stream')){
       const result=await readSSE(r, text=>{setBubbleText(ai.bubble,text,true);ai.box.scrollTop=ai.box.scrollHeight;}, src=>{sources=src;});
       if(result.error && !result.text) throw new Error(result.error);
-      reply=result.text; sources=result.sources||sources;
+      reply=result.text; sources=result.sources||sources; if(result.chatId) savedChatId=result.chatId;
       if(result.error && result.text){const e=addMessage('ai');e.msg.classList.add('error');e.bubble.textContent=result.error;}
     }else{
       const data=await r.json().catch(()=>({}));
       if(data.error && !data.reply) throw new Error(data.error);
-      reply=data.reply||''; sources=data.sources||[];
+      reply=data.reply||''; sources=data.sources||[]; if(data.chatId) savedChatId=data.chatId;
       setBubbleText(ai.bubble,reply,true);
     }
     if(!reply) throw new Error('Модель не вернула текстовый ответ. Попробуйте ещё раз.');
     setBubbleText(ai.bubble,reply,true);
     addSources(ai.msg, sources);
     chatHistory.push({role:'user',text:shown},{role:'model',text:reply});
-    chatHistory=chatHistory.slice(-12);
+    if(currentUser) rememberServerChat(savedChatId, shown, reply);
+    else persistLocal(shown, reply);
     setConnection();
   }catch(err){
     const local=answer(q||'фото');
@@ -944,6 +1387,7 @@ loadKnowledgeBase();
 renderFuel();
 renderService();
 setConnection();
+loadSession();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
 </script>
 </body>
