@@ -3,145 +3,238 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#333B6A">
+<meta name="theme-color" content="#0c0d10" id="themeColor">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="K5 AI — помощник водителя NATCAR по КАМАЗ К5: чат, справочник, учёт ТО и топлива">
+<meta name="description" content="K5 AI — помощник водителя NATCAR по КАМАЗ К5">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>NATCAR K5 AI</title>
 <style>
 :root{
-  --blue:#00A3E2;--blue2:#3bb8eb;--navy:#333B6A;--navy2:#2a3158;
-  --bg:#0b1020;--bg2:#12182b;--surface:#171e33;--surface2:#1d2640;
-  --line:#2a3350;--text:#f4f7fb;--muted:#9aa3bb;--faint:#6e7894;
-  --danger:#ef5b63;--warn:#f3b44a;--ok:#3dce8a;
-  --hdr:calc(58px + env(safe-area-inset-top));
-  --composer:calc(76px + env(safe-area-inset-bottom));
-  --radius:16px;
+  --cyan:#00A3E2;--navy:#333B6A;
+  --bg:#0c0d10;--bg-soft:#14151a;--elev:rgba(255,255,255,.06);
+  --line:rgba(255,255,255,.08);--text:#f5f6f8;--muted:#9aa0ae;--faint:#6d7380;
+  --ok:#34d399;--warn:#f5c56a;--danger:#fb7185;
+  --user:rgba(0,163,226,.16);--ai:transparent;
+  --shadow:0 8px 32px rgba(0,0,0,.28);
+  --glass:rgba(20,21,26,.72);
+  --radius:22px;
+}
+@media(prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4f5f8;--bg-soft:#ffffff;--elev:rgba(255,255,255,.86);
+    --line:rgba(51,59,106,.12);--text:#16181d;--muted:#5c6370;--faint:#8b909a;
+    --user:rgba(0,163,226,.12);
+    --shadow:0 10px 30px rgba(51,59,106,.08);
+    --glass:rgba(255,255,255,.72);
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f4f5f8;--bg-soft:#ffffff;--elev:rgba(255,255,255,.86);
+  --line:rgba(51,59,106,.12);--text:#16181d;--muted:#5c6370;--faint:#8b909a;
+  --user:rgba(0,163,226,.12);
+  --shadow:0 10px 30px rgba(51,59,106,.08);
+  --glass:rgba(255,255,255,.72);
 }
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 html{background:var(--bg)}
-body{color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:
-  radial-gradient(1200px 500px at 80% -10%, #00a3e224, transparent 55%),
-  radial-gradient(800px 400px at -10% 110%, #333b6a55, transparent 50%),
-  var(--bg);
-  min-height:100dvh}
+body{
+  color:var(--text);
+  font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(900px 420px at 100% -10%, rgba(0,163,226,.12), transparent 50%),
+    radial-gradient(700px 380px at -20% 110%, rgba(51,59,106,.18), transparent 46%),
+    var(--bg);
+  min-height:100dvh;
+  letter-spacing:-.011em;
+}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
 img{max-width:100%;display:block}
 .app{min-height:100dvh;display:flex;flex-direction:column}
-.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;
-  padding:calc(10px + env(safe-area-inset-top)) 12px 10px;
-  background:rgba(11,16,32,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.icon-btn{width:44px;height:44px;border:0;border-radius:12px;background:transparent;display:grid;place-items:center;color:var(--text);flex:none}
-.icon-btn:active{background:var(--surface2)}
-.icon-btn svg{width:22px;height:22px}
-.brand-link{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
-.brand-link img{height:26px;width:auto}
-.brand-sub{display:block;font-size:11px;color:var(--muted);margin-top:1px;letter-spacing:.2px}
-.status{flex:none;font-size:11px;font-weight:700;letter-spacing:.2px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.status.ok{color:#b8f0d0;border-color:#1f5a3c;background:#123226}
-.status.warn{color:#f8e0aa;border-color:#6a5220;background:#2a2310}
-.status.bad{color:#ffc7c4;border-color:#6a2a2e;background:#2a1416}
-.status.wake{color:#c9e9ff;border-color:#1a5f80;background:#102433}
-.wake-banner{display:none;margin:0;padding:10px 16px;background:#102433;border-bottom:1px solid #1a5f80;color:#c9e9ff;font-size:13px}
+.top{
+  position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;
+  padding:calc(6px + env(safe-area-inset-top)) 10px 6px;
+  background:var(--glass);backdrop-filter:saturate(1.4) blur(18px);
+  border-bottom:1px solid var(--line);
+}
+.icon-btn{
+  width:44px;height:44px;border:0;border-radius:14px;background:transparent;
+  display:grid;place-items:center;color:var(--text);flex:none;transition:background .15s,transform .15s;
+}
+.icon-btn:active{transform:scale(.96);background:var(--elev)}
+.icon-btn svg{width:20px;height:20px}
+.brand-link{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;text-decoration:none;color:inherit}
+.brand-link img,.drawer-head img,.hero img.wordmark{height:22px;width:auto}
+.logo-light{display:none}
+@media(prefers-color-scheme:light){
+  :root:not([data-theme="dark"]) .logo-dark{display:none}
+  :root:not([data-theme="dark"]) .logo-light{display:block}
+}
+:root[data-theme="light"] .logo-dark{display:none}
+:root[data-theme="light"] .logo-light{display:block}
+:root[data-theme="dark"] .logo-light{display:none}
+:root[data-theme="dark"] .logo-dark{display:block}
+
+.status{
+  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--muted);
+  padding:6px 10px;border-radius:999px;background:var(--elev);border:1px solid var(--line);
+  max-width:42vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.status.ok i{background:var(--ok);box-shadow:0 0 0 3px rgba(52,211,153,.16)}
+.status.warn i{background:var(--warn)}
+.status.bad i{background:var(--danger)}
+.status.wake i{background:var(--cyan);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.wake-banner{display:none;margin:0;padding:10px 18px;font-size:13px;color:var(--muted);text-align:center;border-bottom:1px solid var(--line)}
 .wake-banner.show{display:block}
-main{flex:1;width:100%;max-width:720px;margin:0 auto;padding:16px 16px 28px}
-body.chat-open main{max-width:none;padding:0;display:flex;flex-direction:column;min-height:calc(100dvh - var(--hdr))}
+main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:20px 20px 32px}
+body.chat-open main{max-width:none;padding:0;display:flex;flex-direction:column;min-height:calc(100dvh - 58px - env(safe-area-inset-top))}
 .view{display:none}.view.active{display:block}
 #chat.view.active{display:flex;flex-direction:column;flex:1;min-height:0}
-.eyebrow{color:var(--blue);font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}
-h1{font-size:26px;line-height:1.15;margin:4px 0 8px;letter-spacing:-.3px}
-h2{font-size:18px;margin:22px 0 10px}h3{font-size:15px;margin:0 0 4px}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:28px;line-height:1.15;margin:6px 0 10px;letter-spacing:-.04em;font-weight:650}
+h2{font-size:18px;margin:28px 0 12px;letter-spacing:-.03em;font-weight:600}
+h3{font-size:15px;margin:0 0 4px;font-weight:600}
 p{margin:6px 0;color:var(--muted)}
-.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:22px;padding:22px 20px 20px;
-  background:linear-gradient(160deg,#1a2748 0%,#12182b 55%,#0e1a28 100%);min-height:170px}
-.hero img.wordmark{height:28px;width:auto;margin-bottom:14px}
-.hero h1{margin-top:6px}
-.hero p{max-width:34em}
-.hero:after{content:"";position:absolute;right:-20px;bottom:-30px;width:180px;height:180px;
-  background:url("/brand/natcar-mark.svg") center/contain no-repeat;opacity:.18;pointer-events:none}
-.notice{border:1px solid #3a4a2a;background:#162016;color:#d5e4c8;border-radius:14px;padding:12px;font-size:13px;margin:12px 0;line-height:1.5}
-.notice.warn{border-color:#6a5220;background:#2a2310;color:#f8e0aa}
-.notice.danger{border-color:#6a2a2e;background:#2a1416;color:#ffc7c4}
-.primary,.secondary,.ghost,.send{border-radius:14px;padding:12px 16px;font-weight:750;min-height:44px}
-.primary{border:0;background:linear-gradient(135deg,var(--blue2),var(--blue));color:#041018}
-.secondary{border:1px solid var(--line);background:var(--surface2)}
+.hero{padding:12px 4px 8px}
+.hero img.wordmark{height:24px;margin-bottom:22px}
+.notice{border:1px solid var(--line);background:var(--elev);color:var(--muted);border-radius:18px;padding:14px 16px;font-size:13.5px;margin:14px 0;line-height:1.55}
+.notice.warn{border-color:rgba(245,197,106,.35);color:var(--warn)}
+.notice.danger{border-color:rgba(251,113,133,.35);color:var(--danger)}
+.primary,.secondary,.ghost,.send{border-radius:16px;padding:12px 16px;font-weight:600;min-height:44px;transition:transform .15s,opacity .15s}
+.primary{border:0;background:var(--cyan);color:#041018}
+.primary:active,.secondary:active,.send:active{transform:scale(.98)}
+.secondary{border:1px solid var(--line);background:var(--elev)}
 .ghost{border:1px solid var(--line);background:transparent;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.tile{text-align:left;min-height:114px;transition:transform .12s}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--elev);border:1px solid var(--line);border-radius:20px;padding:16px}
+.tile{text-align:left;min-height:118px;transition:transform .15s,background .15s}
 .tile:active{transform:scale(.98)}
-.tile .ico{font-size:22px}
-.tile b{display:block;margin:8px 0 3px;font-size:14px}
-.tile small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.tile .ico{font-size:20px}
+.tile b{display:block;margin:10px 0 4px;font-size:14px;letter-spacing:-.02em}
+.tile small{display:block;color:var(--muted);font-size:12.5px;line-height:1.4;font-weight:400}
 .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.quick .secondary{padding:9px 12px;font-size:13px;font-weight:650}
+.quick .secondary{padding:9px 14px;font-size:13px;font-weight:500;border-radius:999px}
 .list{display:flex;flex-direction:column;gap:10px}
-.item{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.item .ico{font-size:22px;flex:none}
-.item p{margin:4px 0 8px;font-size:13px}
-.field,textarea.field,select.field{width:100%;border:1px solid var(--line);background:var(--bg2);border-radius:12px;padding:12px 12px;outline:none}
-.field:focus{border-color:var(--blue)}
-label.tiny{display:block;margin:12px 0 6px;font-size:12px;color:var(--muted)}
+.item{display:flex;gap:14px;align-items:flex-start;background:var(--elev);border:1px solid var(--line);border-radius:20px;padding:16px}
+.item .ico{font-size:20px;flex:none}
+.item p{margin:4px 0 10px;font-size:13.5px}
+.field,textarea.field,select.field{
+  width:100%;border:1px solid var(--line);background:var(--bg-soft);border-radius:14px;padding:13px 14px;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.field:focus{border-color:rgba(0,163,226,.55);box-shadow:0 0 0 4px rgba(0,163,226,.12)}
+label.tiny{display:block;margin:14px 0 6px;font-size:12px;color:var(--muted);font-weight:500}
 .footnote{font-size:12px;color:var(--faint)}
-.preview{display:none;margin-top:10px;border-radius:12px;max-height:220px;object-fit:contain;background:#000}
+.preview{display:none;margin-top:10px;border-radius:16px;max-height:220px;object-fit:contain;background:#000}
 .search{margin:8px 0 12px}
-.entry{padding:12px 0;border-bottom:1px solid var(--line)}
+.entry{padding:16px 0;border-bottom:1px solid var(--line)}
 .entry:last-child{border-bottom:0}
-.scrim{position:fixed;inset:0;background:rgba(4,8,16,.62);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:40;opacity:0;pointer-events:none;transition:opacity .22s}
 .scrim.show{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;left:0;bottom:0;width:min(86vw,340px);z-index:50;background:var(--bg2);
-  border-right:1px solid var(--line);transform:translateX(-105%);transition:transform .22s ease;display:flex;flex-direction:column;
-  padding:calc(14px + env(safe-area-inset-top)) 10px calc(16px + env(safe-area-inset-bottom))}
+.drawer{
+  position:fixed;top:0;left:0;bottom:0;width:min(88vw,360px);z-index:50;
+  background:var(--glass);backdrop-filter:blur(22px) saturate(1.3);
+  border-right:1px solid var(--line);transform:translateX(-105%);transition:transform .26s cubic-bezier(.22,.8,.3,1);
+  display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 12px calc(18px + env(safe-area-inset-bottom));
+}
 .drawer.open{transform:none}
-.drawer-head{display:flex;align-items:center;gap:10px;padding:8px 10px 16px}
-.drawer-head img{height:24px}
-.drawer-head small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-.drawer nav{display:flex;flex-direction:column;gap:4px;overflow:auto}
-.drawer nav button{display:flex;align-items:center;gap:12px;text-align:left;border:0;background:transparent;border-radius:12px;padding:12px 12px;min-height:48px;color:var(--text);font-weight:650}
-.drawer nav button .ico{width:28px;text-align:center;font-size:18px}
-.drawer nav button.active{background:linear-gradient(90deg,#00a3e222,#00a3e208);color:#fff;box-shadow:inset 3px 0 0 var(--blue)}
-.chat-stream{flex:1;overflow:auto;padding:14px 14px 10px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
-.bubble{max-width:88%;padding:11px 13px;border-radius:16px;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
-.bubble.user{align-self:flex-end;background:linear-gradient(135deg,#1a6f96,var(--blue));color:#041018;border-bottom-right-radius:6px;font-weight:550}
-.bubble.ai{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
-.bubble.error{align-self:stretch;max-width:100%;background:#2a1416;border:1px solid #6a2a2e;color:#ffc7c4}
-.typing{display:inline-flex;gap:5px;align-items:center;height:16px}
-.typing i{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:blink 1.1s infinite ease-in-out}
+.drawer-head{padding:8px 12px 22px}
+ .drawer-head img{margin-bottom:14px}
+.drawer-head strong{display:block;font-size:20px;letter-spacing:-.04em}
+.drawer-head small{display:block;color:var(--muted);font-size:13px;margin-top:4px;font-weight:400}
+.drawer nav{display:flex;flex-direction:column;gap:2px;overflow:auto}
+.drawer nav button{
+  display:flex;align-items:center;gap:12px;text-align:left;border:0;background:transparent;
+  border-radius:14px;padding:12px 12px;min-height:48px;color:var(--text);font-weight:500;
+}
+.drawer nav button .ico{width:28px;text-align:center;font-size:16px}
+.drawer nav button.active{background:rgba(0,163,226,.12);color:var(--text)}
+.drawer-foot{margin-top:auto;padding:12px}
+.empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:24px 24px 12px;animation:rise .45s ease both;
+}
+.empty img.mark{width:56px;height:56px;margin-bottom:22px;border-radius:16px}
+.empty h1{font-size:30px;margin:0 0 8px}
+.empty p{max-width:22em;margin:0 0 22px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:420px}
+.chips button{
+  border:1px solid var(--line);background:var(--elev);border-radius:999px;padding:10px 14px;
+  font-size:13.5px;font-weight:500;min-height:42px;transition:transform .15s,border-color .15s;
+}
+.chips button:active{transform:scale(.98);border-color:var(--cyan)}
+.chat-stream{flex:1;overflow:auto;padding:18px 18px 8px;display:flex;flex-direction:column;gap:18px;-webkit-overflow-scrolling:touch}
+.msg{display:flex;flex-direction:column;gap:8px;max-width:100%;animation:rise .35s ease both}
+.msg.user{align-items:flex-end}
+.msg.ai{align-items:stretch}
+.bubble{max-width:86%;padding:12px 16px;border-radius:22px;font-size:15.5px;line-height:1.55;word-wrap:break-word}
+.msg.user .bubble{background:var(--user);border:1px solid rgba(0,163,226,.18);border-bottom-right-radius:8px}
+.msg.ai .bubble{max-width:100%;background:transparent;padding:2px 4px;border-radius:0}
+.msg.ai .bubble p{color:var(--text);margin:0 0 .8em}
+.msg.ai .bubble p:last-child{margin-bottom:0}
+.msg.ai .bubble ul,.msg.ai .bubble ol{margin:.2em 0 1em;padding-left:1.2em;color:var(--text)}
+.msg.ai .bubble li{margin:.2em 0}
+.msg.ai .bubble strong{font-weight:650}
+.msg.ai .bubble code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--elev);border:1px solid var(--line);border-radius:6px;padding:.1em .35em}
+.msg.ai .bubble pre{background:var(--bg-soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;overflow:auto;font-size:13px}
+.msg.ai .bubble pre code{background:none;border:0;padding:0}
+.msg.ai .bubble h3{margin:1em 0 .4em;font-size:15px}
+.msg.ai .bubble hr{border:0;border-top:1px solid var(--line);margin:1em 0}
+.msg.error .bubble{background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.25);color:var(--danger);border-radius:16px;padding:12px 14px;max-width:100%}
+.sources{display:flex;flex-wrap:wrap;gap:6px;padding:0 4px}
+.sources a{
+  display:inline-flex;align-items:center;gap:6px;max-width:100%;
+  font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;
+  border:1px solid var(--line);background:var(--elev);border-radius:999px;padding:6px 10px;
+}
+.sources a:active{transform:scale(.98)}
+.sources a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.typing{display:inline-flex;gap:5px;align-items:center;height:18px;padding:8px 4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:blink 1.1s infinite ease-in-out}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-@keyframes blink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
-.composer{position:sticky;bottom:0;display:flex;gap:8px;align-items:flex-end;padding:8px 12px calc(10px + env(safe-area-inset-bottom));
-  background:rgba(11,16,32,.96);border-top:1px solid var(--line);backdrop-filter:blur(12px)}
-.composer .field{flex:1;min-height:48px;max-height:140px;resize:none;padding:12px 14px}
-.composer .icon-btn,.send{width:48px;height:48px;flex:none;display:grid;place-items:center;padding:0}
-.send{border:0;background:var(--blue);color:#041018;border-radius:14px;font-size:18px;font-weight:800}
-.send:disabled{opacity:.5}
-.chat-quick{display:flex;gap:8px;overflow:auto;padding:0 12px 8px;scrollbar-width:none}
-.chat-quick::-webkit-scrollbar{display:none}
-.chat-quick button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 12px;font-size:13px;min-height:40px}
-.tabs-inline{display:flex;gap:8px;margin:12px 0}
-.tabs-inline button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;min-height:44px;font-weight:700}
-.tabs-inline button.active{background:#15344a;border-color:var(--blue);color:#fff}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
-.stat b{display:block;font-size:20px;letter-spacing:-.3px}
+@keyframes blink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.composer-wrap{padding:8px 12px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top, var(--bg) 60%, transparent)}
+.composer{
+  display:flex;gap:8px;align-items:flex-end;
+  padding:8px 8px 8px 10px;border-radius:28px;
+  background:var(--elev);border:1px solid var(--line);
+  box-shadow:var(--shadow);backdrop-filter:blur(16px);
+}
+.composer .field{flex:1;min-height:44px;max-height:140px;resize:none;border:0;background:transparent;box-shadow:none;padding:10px 6px;border-radius:0}
+.composer .field:focus{box-shadow:none}
+.composer .icon-btn{width:42px;height:42px}
+.send{width:42px;height:42px;flex:none;display:grid;place-items:center;padding:0;border:0;background:var(--cyan);color:#041018;border-radius:50%;font-size:16px}
+.send:disabled{opacity:.4}
+.chat-image{padding:0 16px 8px}
+.tabs-inline{display:flex;gap:8px;margin:14px 0;padding:4px;background:var(--elev);border-radius:16px;border:1px solid var(--line)}
+.tabs-inline button{flex:1;border:0;background:transparent;border-radius:12px;padding:10px;min-height:44px;font-weight:600;color:var(--muted)}
+.tabs-inline button.active{background:var(--bg-soft);color:var(--text);box-shadow:var(--shadow)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.stat{background:var(--elev);border:1px solid var(--line);border-radius:18px;padding:14px}
+.stat b{display:block;font-size:22px;letter-spacing:-.04em}
 .stat span{font-size:12px;color:var(--muted)}
 .log{display:flex;flex-direction:column;gap:8px}
-.log .row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.log .row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;background:var(--elev);border:1px solid var(--line);border-radius:16px;padding:14px}
 .log .row small{display:block;color:var(--muted)}
-.badge{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:3px 8px}
-.badge.ok{background:#123226;color:#b8f0d0}
-.badge.warn{background:#2a2310;color:#f8e0aa}
-.badge.danger{background:#2a1416;color:#ffc7c4}
-.form-actions{display:flex;gap:8px;margin-top:14px}
+.badge{display:inline-block;font-size:11px;font-weight:650;border-radius:999px;padding:3px 8px}
+.badge.ok{background:rgba(52,211,153,.12);color:var(--ok)}
+.badge.warn{background:rgba(245,197,106,.14);color:var(--warn)}
+.badge.danger{background:rgba(251,113,133,.12);color:var(--danger)}
+.form-actions{display:flex;gap:8px;margin-top:16px}
 .form-actions .primary,.form-actions .secondary{flex:1}
 .hidden{display:none!important}
 @media(min-width:720px){
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .bubble{max-width:72%}
+  .msg.user .bubble{max-width:72%}
 }
 </style>
 </head>
@@ -149,24 +242,25 @@ label.tiny{display:block;margin:12px 0 6px;font-size:12px;color:var(--muted)}
 <div class="app">
 <header class="top">
   <button class="icon-btn" id="menuBtn" aria-label="Открыть меню" onclick="toggleMenu(true)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg>
   </button>
-  <a class="brand-link" href="#" onclick="go('home');return false">
-    <img src="/brand/natcar-logo.svg" alt="NATCAR">
+  <a class="brand-link" href="#" onclick="go('chat');return false">
+    <img class="logo-dark" src="/brand/natcar-logo.svg" alt="NATCAR"><img class="logo-light" src="/brand/natcar-logo-color.svg" alt="NATCAR">
   </a>
-  <div id="connection" class="status">Проверка…</div>
+  <div id="connection" class="status"><i></i>Проверка</div>
 </header>
 <div id="wakeBanner" class="wake-banner">Сервер просыпается, обычно это занимает до минуты…</div>
 
 <div class="scrim" id="scrim" onclick="toggleMenu(false)"></div>
 <aside class="drawer" id="drawer" aria-label="Меню">
   <div class="drawer-head">
-    <img src="/brand/natcar-logo.svg" alt="NATCAR">
-    <div><strong>K5 AI</strong><small>Помощник водителя КАМАЗ К5</small></div>
+    <img class="logo-dark" src="/brand/natcar-logo.svg" alt="NATCAR"><img class="logo-light" src="/brand/natcar-logo-color.svg" alt="NATCAR">
+    <strong>K5 AI</strong>
+    <small>Помощник водителя КАМАЗ К5</small>
   </div>
   <nav>
-    <button data-view="home" onclick="go('home')"><span class="ico">⌂</span>Главная</button>
-    <button data-view="chat" onclick="go('chat')"><span class="ico">💬</span>ИИ-чат</button>
+    <button data-view="chat" class="active" onclick="go('chat')"><span class="ico">✦</span>Чат</button>
+    <button data-view="home" onclick="go('home')"><span class="ico">⌂</span>Обзор</button>
     <button data-view="faults" onclick="go('faults')"><span class="ico">⚠</span>Ошибки и системы</button>
     <button data-view="winter" onclick="go('winter')"><span class="ico">❄</span>Зимнее вождение</button>
     <button data-view="truck" onclick="go('truck')"><span class="ico">🚛</span>Мой КАМАЗ</button>
@@ -174,67 +268,77 @@ label.tiny{display:block;margin:12px 0 6px;font-size:12px;color:var(--muted)}
     <button data-view="manual" onclick="go('manual')"><span class="ico">📚</span>Справочник</button>
     <button data-view="ops" onclick="go('ops')"><span class="ico">⛽</span>Учёт ТО и топлива</button>
   </nav>
+  <div class="drawer-foot">
+    <button class="secondary" style="width:100%" onclick="toggleTheme()">Сменить тему</button>
+  </div>
 </aside>
 
 <main>
-<section id="home" class="view active">
-  <div class="hero">
-    <img class="wordmark" src="/brand/natcar-logo.svg" alt="NATCAR">
-    <div class="eyebrow">Помощник водителя</div>
-    <h1>На связи,<br>водитель.</h1>
-    <p>Системы КАМАЗ К5, предупреждения, учёт топлива и ТО — в одном приложении NATCAR.</p>
-    <button class="primary" onclick="go('chat')" style="margin-top:14px">Задать вопрос</button>
+<section id="chat" class="view active">
+  <div class="empty" id="emptyState">
+    <img class="mark" src="/brand/natcar-mark.svg" alt="">
+    <h1>Чем помочь на рейсе?</h1>
+    <p>Ищу ответы в открытых источниках и опыте водителей КАМАЗ К5. Официальные мануалы — только как проверка.</p>
+    <div class="chips">
+      <button onclick="preset('Что обычно пишут водители КАМАЗ К5, если горит жёлтая лампа EBS?')">Жёлтая лампа EBS</button>
+      <button onclick="preset('Как водители К5 готовят машину к зимнему рейсу? Практические советы, не только регламент.')">Подготовка к зиме</button>
+      <button onclick="preset('Как на практике тормозить на длинном спуске с гружёным полуприцепом на КАМАЗ К5?')">Спуск с грузом</button>
+      <button onclick="preset('Какой реальный расход топлива у КАМАЗ К5 на трассе с фурой? Что пишут водители.')">Расход на трассе</button>
+    </div>
   </div>
-  <div class="notice"><b>Безопасность прежде всего.</b> Не пользуйтесь приложением во время движения. При красном предупреждении, изменении торможения или рулевого управления остановитесь в безопасном месте и организуйте диагностику.</div>
-  <h2>Быстрый доступ</h2>
+  <div class="chat-stream hidden" id="chatbox"></div>
+  <div id="chatImageWrap" class="chat-image hidden">
+    <img id="chatImagePreview" class="preview" style="display:block;max-height:130px" alt="Фото для отправки">
+    <button class="ghost" onclick="clearChatImage()" style="margin-top:6px">Убрать фото</button>
+  </div>
+  <div class="composer-wrap">
+    <div class="composer">
+      <button class="icon-btn" onclick="document.getElementById('chatImageInput').click()" title="Добавить фото" aria-label="Добавить фото">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-2h6l2 2h3v12H4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+      </button>
+      <textarea id="q" class="field" rows="1" placeholder="Вопрос по К5…" autocomplete="off"></textarea>
+      <button class="icon-btn" id="micBtn" onclick="toggleMic()" aria-label="Голосовой ввод">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>
+      </button>
+      <button class="send" id="sendBtn" onclick="send()" aria-label="Отправить">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <input id="chatImageInput" type="file" accept="image/*" capture="environment" class="hidden">
+    </div>
+  </div>
+</section>
+
+<section id="home" class="view">
+  <div class="hero">
+    <img class="wordmark logo-dark" src="/brand/natcar-logo.svg" alt="NATCAR"><img class="wordmark logo-light" src="/brand/natcar-logo-color.svg" alt="NATCAR">
+    <div class="eyebrow">Помощник водителя</div>
+    <h1>На связи в рейсе.</h1>
+    <p>Системы КАМАЗ К5, предупреждения, учёт топлива и ТО. Чат ищет ответы в первую очередь в открытых источниках.</p>
+    <button class="primary" onclick="go('chat')" style="margin-top:16px">Открыть чат</button>
+  </div>
+  <div class="notice"><b style="color:var(--text)">Безопасность прежде всего.</b> Не пользуйтесь приложением во время движения. При красном предупреждении, изменении торможения или рулевого управления остановитесь в безопасном месте.</div>
+  <h2>Разделы</h2>
   <div class="grid">
-    <button class="card tile" onclick="go('chat')"><span class="ico">💬</span><b>ИИ-помощник</b><small>Вопросы по эксплуатации и неисправностям</small></button>
+    <button class="card tile" onclick="go('chat')"><span class="ico">✦</span><b>ИИ-чат</b><small>Вопросы по опыту водителей и открытым источникам</small></button>
     <button class="card tile" onclick="go('faults')"><span class="ico">⚠️</span><b>Ошибки и системы</b><small>EBS, ABS, ESP и другие предупреждения</small></button>
     <button class="card tile" onclick="go('winter')"><span class="ico">❄️</span><b>Зимнее вождение</b><small>Сцепление, дистанция, торможение</small></button>
     <button class="card tile" onclick="go('truck')"><span class="ico">🚛</span><b>Мой КАМАЗ</b><small>Профиль конкретной машины</small></button>
     <button class="card tile" onclick="go('photo')"><span class="ico">📷</span><b>Фото панели</b><small>Подготовить снимок для разбора</small></button>
-    <button class="card tile" onclick="go('manual')"><span class="ico">📚</span><b>Справочник</b><small>Памятки и поиск по материалам</small></button>
+    <button class="card tile" onclick="go('manual')"><span class="ico">📚</span><b>Справочник</b><small>Локальные памятки</small></button>
     <button class="card tile" onclick="go('ops')"><span class="ico">⛽</span><b>ТО и топливо</b><small>Заправки, расход и напоминания о сервисе</small></button>
-  </div>
-  <h2>Частые вопросы</h2>
-  <div class="quick">
-    <button class="secondary" onclick="preset('На панели загорелась EBS, код ошибки не отображается. Помоги разобраться.')">EBS без кода</button>
-    <button class="secondary" onclick="preset('Как подготовить КАМАЗ К5 к зимнему рейсу?')">Подготовка к зиме</button>
-    <button class="secondary" onclick="preset('Как правильно тормозить на спуске с загруженным полуприцепом?')">Спуск с грузом</button>
-  </div>
-</section>
-
-<section id="chat" class="view">
-  <div class="chat-stream" id="chatbox">
-    <div class="bubble ai">Привет! Я K5 AI, помощник NATCAR по КАМАЗ К5. Опишите симптом или приложите фото панели. Если вопрос касается тормозов, рулевого управления или пневматики — сначала обеспечьте безопасную остановку.</div>
-  </div>
-  <div id="chatImageWrap" class="hidden" style="padding:0 12px 8px">
-    <img id="chatImagePreview" class="preview" style="display:block;max-height:130px" alt="Фото для отправки">
-    <button class="ghost" onclick="clearChatImage()" style="margin-top:6px">Убрать фото</button>
-  </div>
-  <div class="chat-quick">
-    <button onclick="preset('Загорелась EBS, но код не отображается.')">EBS</button>
-    <button onclick="preset('Появился значок на приборной панели. Какие данные нужны?')">Значок панели</button>
-    <button onclick="preset('Как безопасно действовать на скользком спуске?')">Скользкий спуск</button>
-  </div>
-  <div class="composer">
-    <button class="icon-btn secondary" onclick="document.getElementById('chatImageInput').click()" title="Добавить фото" aria-label="Добавить фото">📷</button>
-    <textarea id="q" class="field" rows="1" placeholder="Напишите вопрос…" autocomplete="off"></textarea>
-    <button class="send" id="sendBtn" onclick="send()" aria-label="Отправить">➤</button>
-    <input id="chatImageInput" type="file" accept="image/*" capture="environment" class="hidden">
   </div>
 </section>
 
 <section id="faults" class="view">
   <div class="eyebrow">Диагностика</div>
   <h1>Ошибки и системы</h1>
-  <p>Сначала уточняем симптомы, затем сверяем со справочником. Приложение не считывает ЭБУ.</p>
-  <div class="notice"><b>Важно:</b> не отключайте датчики и не обходите защитные системы.</div>
+  <p>Сначала симптомы, затем опыт водителей и справочник. Приложение не считывает ЭБУ.</p>
+  <div class="notice">Не отключайте датчики и не обходите защитные системы.</div>
   <div class="list">
-    <div class="item"><span class="ico">🛑</span><div><h3>Тормозная система / EBS</h3><p>Предупреждения, давление, эффективность торможения. При изменении торможения — безопасная остановка и сервис.</p><button class="ghost" onclick="preset('Помоги разобрать предупреждение EBS. Задай уточняющие вопросы.')">Разобрать симптом</button></div></div>
-    <div class="item"><span class="ico">🛞</span><div><h3>ABS / ESP</h3><p>Системы предотвращения блокировки колёс и стабилизации. Нужны точный значок, цвет и условия появления.</p><button class="ghost" onclick="preset('Загорелась лампа ABS или ESP. Что важно уточнить?')">Разобрать симптом</button></div></div>
-    <div class="item"><span class="ico">🌬️</span><div><h3>Пневматика</h3><p>Давление воздуха, утечки и сообщения системы. При недостаточном давлении не продолжайте движение.</p><button class="ghost" onclick="preset('Есть подозрение на проблему с давлением воздуха. Какие безопасные действия?')">Разобрать симптом</button></div></div>
-    <div class="item"><span class="ico">🔋</span><div><h3>Электрика</h3><p>Питание, предохранители и потребители. Перед проверками учитывайте руководство и безопасность.</p><button class="ghost" onclick="preset('Не работает электрический потребитель в кабине. С чего начать поиск причины?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🛑</span><div><h3>Тормозная система / EBS</h3><p>Предупреждения, давление, эффективность торможения. При изменении торможения — безопасная остановка и сервис.</p><button class="ghost" onclick="preset('По опыту водителей КАМАЗ К5: что обычно значит жёлтая или красная лампа EBS и что проверить на стоянке?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🛞</span><div><h3>ABS / ESP</h3><p>Системы предотвращения блокировки колёс и стабилизации. Нужны точный значок, цвет и условия появления.</p><button class="ghost" onclick="preset('Загорелась лампа ABS или ESP на КАМАЗ К5. Что пишут водители и что важно уточнить?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🌬️</span><div><h3>Пневматика</h3><p>Давление воздуха, утечки и сообщения системы. При недостаточном давлении не продолжайте движение.</p><button class="ghost" onclick="preset('Есть подозрение на проблему с давлением воздуха на К5. Какие безопасные действия и типичные причины по опыту водителей?')">Разобрать симптом</button></div></div>
+    <div class="item"><span class="ico">🔋</span><div><h3>Электрика</h3><p>Питание, предохранители и потребители. Перед проверками учитывайте руководство и безопасность.</p><button class="ghost" onclick="preset('Не работает электрический потребитель в кабине КАМАЗ К5. С чего водители обычно начинают поиск причины?')">Разобрать симптом</button></div></div>
   </div>
 </section>
 
@@ -246,15 +350,15 @@ label.tiny{display:block;margin:12px 0 6px;font-size:12px;color:var(--muted)}
     <div class="item"><span class="ico">🔍</span><div><h3>Перед выездом</h3><p>Проверьте состояние и давление шин тягача и полуприцепа, свет, стеклоочистители, омыватель, чистоту стёкол и зеркал, отсутствие предупреждений тормозных систем.</p></div></div>
     <div class="item"><span class="ico">↔️</span><div><h3>Дистанция и скорость</h3><p>Снижайте скорость заранее и оставляйте значительно больший запас дистанции. Учитывайте мосты, тень, съезды и участки с переменным покрытием.</p></div></div>
     <div class="item"><span class="ico">🧊</span><div><h3>Скользкая дорога</h3><p>Избегайте резких действий рулём, тормозом и акселератором. Не входите в поворот с избыточной скоростью.</p></div></div>
-    <div class="item"><span class="ico">⛰️</span><div><h3>Спуски</h3><p>Выбирайте безопасную скорость и подходящую передачу до начала спуска. Используйте вспомогательные тормозные системы только согласно руководству КАМАЗ и дорожным условиям.</p></div></div>
+    <div class="item"><span class="ico">⛰️</span><div><h3>Спуски</h3><p>Выбирайте безопасную скорость и подходящую передачу до начала спуска. Используйте вспомогательные тормозные системы только согласно руководству и дорожным условиям.</p></div></div>
   </div>
-  <div class="notice">При заносе автопоезда нет универсального действия для всех ситуаций. Не делайте резких движений и не провоцируйте складывание. Приоритет — сохранить устойчивость и безопасно остановиться.</div>
+  <div class="notice">При заносе автопоезда нет универсального действия для всех ситуаций. Не делайте резких движений. Приоритет — устойчивость и безопасная остановка.</div>
 </section>
 
 <section id="truck" class="view">
   <div class="eyebrow">Профиль техники</div>
   <h1>Мой КАМАЗ К5</h1>
-  <p>Заполните характеристики, чтобы ответы учитывали вашу комплектацию.</p>
+  <p>Характеристики помогают уточнять ответы под вашу комплектацию.</p>
   <div class="card">
     <label class="tiny">Год выпуска</label><input id="year" class="field" placeholder="Например, 2023" inputmode="numeric">
     <label class="tiny">Двигатель</label><input id="engine" class="field" placeholder="Модель двигателя, если знаете">
@@ -264,31 +368,31 @@ label.tiny{display:block;margin:12px 0 6px;font-size:12px;color:var(--muted)}
     <div class="form-actions"><button class="primary" onclick="saveProfile()">Сохранить профиль</button></div>
     <p id="saved" class="tiny" style="margin-top:8px"></p>
   </div>
-  <div class="notice">Не вводите VIN, госномер, личные данные или другую чувствительную информацию. Для технического профиля достаточно модели и комплектации.</div>
+  <div class="notice">Не вводите VIN, госномер или личные данные. Достаточно модели и комплектации.</div>
 </section>
 
 <section id="photo" class="view">
   <div class="eyebrow">Визуальный разбор</div>
   <h1>Фотография</h1>
-  <p>Добавьте снимок значка или приборной панели для подготовки диагностики.</p>
+  <p>Добавьте снимок значка или приборной панели.</p>
   <div class="card">
     <label class="primary" style="display:inline-block">＋ Выбрать фотографию<input id="photoInput" type="file" accept="image/*" capture="environment" class="hidden"></label>
     <img id="preview" class="preview" alt="Предпросмотр фотографии">
     <p id="photoInfo" class="footnote"></p>
   </div>
-  <div class="notice">Чтобы получить анализ изображения, откройте ИИ-чат и прикрепите фото. Без интернета снимок не отправляется и остаётся только на устройстве. Не фотографируйте во время движения.</div>
+  <div class="notice">Чтобы получить анализ, откройте чат и прикрепите фото. Без интернета снимок остаётся только на устройстве.</div>
 </section>
 
 <section id="manual" class="view">
   <div class="eyebrow">База знаний</div>
   <h1>Справочник</h1>
-  <p>Первые памятки. Позже можно добавить материалы именно вашей модификации.</p>
+  <p>Локальные памятки. В чате они используются только как вторичный ориентир.</p>
   <input id="search" class="field search" placeholder="Поиск по справочнику…" oninput="filterManual()">
   <div id="manualList" class="card">
     <p class="footnote" id="kbStatus">Загружаю локальную базу знаний…</p>
     <div id="kbEntries"></div>
   </div>
-  <p class="footnote">Материалы предварительные и не заменяют руководство по эксплуатации КАМАЗ.</p>
+  <p class="footnote">Материалы предварительные и не заменяют руководство по эксплуатации.</p>
 </section>
 
 <section id="ops" class="view">
@@ -346,24 +450,96 @@ function toggleMenu(open){
   document.getElementById('scrim').classList.toggle('show', open);
   document.body.style.overflow = open ? 'hidden' : '';
 }
+function applyTheme(theme){
+  if(theme==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', theme);
+  const dark = theme==='dark' || (theme==='auto' && matchMedia('(prefers-color-scheme:dark)').matches);
+  document.getElementById('themeColor').setAttribute('content', dark ? '#0c0d10' : '#f4f5f8');
+}
+function toggleTheme(){
+  const cur=localStorage.getItem('k5ai-theme')||'auto';
+  const next=cur==='auto'?'dark':cur==='dark'?'light':'auto';
+  localStorage.setItem('k5ai-theme', next);
+  applyTheme(next);
+}
+applyTheme(localStorage.getItem('k5ai-theme')||'auto');
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if((localStorage.getItem('k5ai-theme')||'auto')==='auto')applyTheme('auto');});
+
 function go(id){
   views.forEach(v=>document.getElementById(v).classList.toggle('active',v===id));
   document.querySelectorAll('.drawer nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
   document.body.classList.toggle('chat-open', id==='chat');
   toggleMenu(false);
   if(id!=='chat') window.scrollTo({top:0,behavior:'smooth'});
-  else setTimeout(()=>{const box=document.getElementById('chatbox');box.scrollTop=box.scrollHeight;},50);
+  else setTimeout(()=>{const box=document.getElementById('chatbox');if(!box.classList.contains('hidden')) box.scrollTop=box.scrollHeight;},50);
 }
 function preset(t){go('chat');document.getElementById('q').value=t;send();}
-function addBubble(t,who,opts={}){
-  const d=document.createElement('div');
-  d.className='bubble '+who+(opts.error?' error':'');
-  if(opts.html) d.innerHTML=t; else d.textContent=t;
-  const box=document.getElementById('chatbox');
-  box.appendChild(d);
-  box.scrollTop=box.scrollHeight;
-  return d;
+function showChat(){
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('chatbox').classList.remove('hidden');
 }
+
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderMarkdown(src){
+  const fences=[];
+  let text=String(src||'').replace(/```([\s\S]*?)```/g,(_,code)=>{fences.push('<pre><code>'+escapeHtml(code.replace(/^\w+\n/,''))+'</code></pre>');return `\u0000F${fences.length-1}\u0000`;});
+  const lines=text.split('\n');
+  const out=[]; let list=null;
+  const flush=()=>{if(list){out.push((list.t==='ol'?'<ol>':'<ul>')+list.i.map(i=>'<li>'+i+'</li>').join('')+(list.t==='ol'?'</ol>':'</ul>'));list=null;}};
+  const inline=s=>{
+    s=escapeHtml(s);
+    s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+    s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    s=s.replace(/(^|[^\*])\*([^*\n]+)\*/g,'$1<em>$2</em>');
+    s=s.replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    return s;
+  };
+  for(const raw of lines){
+    if(/^\u0000F\d+\u0000$/.test(raw.trim())){flush();out.push(raw.trim());continue;}
+    const t=raw.trim();
+    if(!t){flush();continue;}
+    if(/^###\s+/.test(t)){flush();out.push('<h3>'+inline(t.replace(/^###\s+/,''))+'</h3>');continue;}
+    if(/^##\s+/.test(t)){flush();out.push('<h3>'+inline(t.replace(/^##\s+/,''))+'</h3>');continue;}
+    if(/^---+$/.test(t)){flush();out.push('<hr>');continue;}
+    const ul=t.match(/^[-•*]\s+(.*)/); const ol=t.match(/^\d+[.)]\s+(.*)/);
+    if(ul||ol){
+      const typ=ul?'ul':'ol'; const body=inline((ul||ol)[1]);
+      if(!list||list.t!==typ){flush();list={t:typ,i:[]};}
+      list.i.push(body); continue;
+    }
+    flush(); out.push('<p>'+inline(raw)+'</p>');
+  }
+  flush();
+  return out.join('').replace(/\u0000F(\d+)\u0000/g,(_,i)=>fences[Number(i)]||'');
+}
+function addMessage(who){
+  showChat();
+  const msg=document.createElement('div'); msg.className='msg '+who;
+  const bubble=document.createElement('div'); bubble.className='bubble';
+  msg.appendChild(bubble);
+  const box=document.getElementById('chatbox');
+  box.appendChild(msg); box.scrollTop=box.scrollHeight;
+  return {msg,bubble,box};
+}
+function setBubbleText(el, text, asMarkdown){
+  if(asMarkdown) el.innerHTML=renderMarkdown(text);
+  else el.textContent=text;
+}
+function addSources(msg, sources){
+  if(!sources||!sources.length) return;
+  const row=document.createElement('div'); row.className='sources';
+  sources.slice(0,8).forEach(s=>{
+    const a=document.createElement('a');
+    a.href=s.uri; a.target='_blank'; a.rel='noopener noreferrer';
+    let host=''; try{host=new URL(s.uri).hostname.replace(/^www\./,'');}catch{}
+    const label=s.title||host||s.uri;
+    a.innerHTML='<span>'+escapeHtml(label)+'</span>';
+    if(host && !label.toLowerCase().includes(host.toLowerCase())) a.title=host;
+    row.appendChild(a);
+  });
+  msg.appendChild(row);
+}
+
 let knowledgeBase=null;
 function norm(s){return String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,' ').trim();}
 function findKnowledge(q){
@@ -371,7 +547,6 @@ function findKnowledge(q){
   const terms=norm(q).split(/\s+/).filter(w=>w.length>2);
   if(!terms.length)return [];
   return knowledgeBase.entries.map(e=>{
-    const hay=norm([e.title,e.category,(e.tags||[]).join(' '),e.summary,e.content].join(' '));
     let score=0;
     for(const t of terms){if(norm(e.title).includes(t))score+=5;if((e.tags||[]).some(tag=>norm(tag).includes(t)))score+=4;if(norm(e.summary).includes(t))score+=2;if(norm(e.content).includes(t))score+=1;if(norm(e.category).includes(t))score+=2;}
     return {e,score};
@@ -397,17 +572,16 @@ async function loadKnowledgeBase(){
 }
 function answer(q){
   const s=norm(q);
-  if(/фото|фотограф|панел/.test(s))return 'В офлайн-режиме я не могу распознать изображение. Фото не отправлялось. Подключитесь к интернету для анализа Gemini. Для точного разбора сфотографируйте весь экран панели и отдельно сам значок, чтобы были видны цвет и текст.';
+  if(/фото|фотограф|панел/.test(s))return 'В офлайн-режиме я не могу распознать изображение. Подключитесь к интернету, чтобы поискать разборы похожих значков и опыт водителей.';
   const found=findKnowledge(q);
   if(found.length){
-    let out='Нашёл в офлайн-базе подходящие материалы:\n\n';
-    out+=found.map((e,i)=>`${i+1}. ${e.title}\n${e.summary||''}\n${e.content||''}`).join('\n\n');
-    out+='\n\nЭто справочные материалы, а не диагностика конкретного автомобиля. Для точных норм нужны модель, год и комплектация.';
+    let out='Пока нет сети, могу опереться только на локальные памятки (это вторичный источник):\n\n';
+    out+=found.map((e,i)=>`${i+1}. **${e.title}**\n${e.summary||''}\n${e.content||''}`).join('\n\n');
     return out;
   }
-  if(/ebs|abs|esp|тормоз/.test(s))return 'По тормозным системам не гадайте по одному символу. Уточните цвет и вид значка, когда он появляется, есть ли код ошибки и изменилось ли торможение. При красном предупреждении, изменении торможения или недостаточном давлении воздуха безопасно остановитесь и вызовите техническую помощь. Не отключайте защитные системы.';
-  if(/зим|мороз|скольз|лед|снег/.test(s))return 'В первую очередь проверьте шины, свет, стеклоочистители, омыватель и тормозные системы тягача с полуприцепом. Снижайте скорость заранее, увеличивайте дистанцию, избегайте резких действий. Точные процедуры по КПП и вспомогательному торможению сверяйте с руководством своей комплектации.';
-  return 'В локальной базе не нашёл точного совпадения. Попробуйте другое ключевое слово: EBS, ABS, ESP, пневматика, зима, спуск, отопитель, ТО, предрейсовый осмотр. Для точной подсказки укажите год, модель, двигатель, значок/код и условия появления. При проблемах тормозов, рулевого управления или пневматики сначала безопасная остановка.';
+  if(/ebs|abs|esp|тормоз/.test(s))return 'По тормозным системам не гадайте по одному символу. На стоянке уточните цвет и вид значка, когда он появляется, есть ли код и изменилось ли торможение. При красном предупреждении, изменении торможения или падении давления воздуха — безопасная остановка и помощь. Не отключайте защитные системы.';
+  if(/зим|мороз|скольз|лед|снег/.test(s))return 'Проверьте шины, свет, стеклоочистители, омыватель и тормозные системы тягача с полуприцепом. Снижайте скорость заранее и увеличивайте дистанцию. Точные процедуры по КПП сверяйте с вашей комплектацией.';
+  return 'Сейчас нет сети, поэтому поиск по открытым источникам недоступен. Попробуйте другое ключевое слово или подключитесь к интернету.';
 }
 
 const DEFAULT_SERVICES=[
@@ -444,7 +618,6 @@ function addMonths(dateStr, months){
   dt.setMonth(dt.getMonth()+Number(months||0));
   return dt.toISOString().slice(0,10);
 }
-
 function fuelStatsData(){
   const list=fuelEntries().slice().sort((a,b)=>a.odo-b.odo||a.date.localeCompare(b.date));
   const segs=[];
@@ -473,12 +646,10 @@ function renderFuel(){
   const log=document.getElementById('fuelLog');
   if(!st.list.length){log.innerHTML='<p class="footnote">Пока нет заправок. После двух записей с пробегом появится расход л/100 км.</p>';return;}
   log.replaceChildren();
-  st.list.slice().reverse().forEach((e,idx,arr)=>{
+  st.list.slice().reverse().forEach((e,idx)=>{
     const older=st.list[st.list.length-1-idx-1];
     let extra='';
-    if(older && e.odo>older.odo && e.liters>0){
-      extra=` · ${fmtNum(e.liters/(e.odo-older.odo)*100,1)} л/100 км`;
-    }
+    if(older && e.odo>older.odo && e.liters>0) extra=` · ${fmtNum(e.liters/(e.odo-older.odo)*100,1)} л/100 км`;
     const row=document.createElement('div');row.className='row';
     row.innerHTML=`<div><b>${fmtDate(e.date)} · ${fmtNum(e.odo,0)} км</b><small>${fmtNum(e.liters,1)} л · ${fmtNum(e.price,2)} ₽/л · ${fmtNum(e.liters*e.price,0)} ₽${extra}</small></div><button class="ghost" data-id="${e.id}">Удалить</button>`;
     row.querySelector('button').onclick=()=>{saveJSON('k5ai-fuel',fuelEntries().filter(x=>x.id!==e.id));renderFuel();};
@@ -550,7 +721,7 @@ function renderService(){
   next.replaceChildren();
   states.forEach(s=>{
     const el=document.createElement('div');el.className='item';
-    el.innerHTML=`<div style="flex:1"><div class="row" style="display:flex;justify-content:space-between;gap:8px"><h3>${s.def.name}</h3><span class="badge ${s.status}">${s.label}</span></div>
+    el.innerHTML=`<div style="flex:1"><div style="display:flex;justify-content:space-between;gap:8px"><h3>${s.def.name}</h3><span class="badge ${s.status}">${s.label}</span></div>
       <p>Интервал: ${fmtNum(s.def.km,0)} км или ${s.def.months} мес.${s.last?`<br>Последнее: ${fmtDate(s.last.date)} · ${fmtNum(s.last.odo,0)} км`: '<br>Ещё не отмечалось.'}
       ${s.nextKm?`<br>Следующее: ${fmtNum(s.nextKm,0)} км`:''}${s.nextDate?` / ${fmtDate(s.nextDate)}`:''}</p></div>`;
     next.append(el);
@@ -605,10 +776,10 @@ function opsSummary(){
   return bits.join('. ');
 }
 
-let chatHistory=[];let pendingImage=null;let healthState={ready:false};
+let chatHistory=[];let pendingImage=null;let healthState={ready:false};let recognizing=false;
 function setStatus(text,kind){
   const c=document.getElementById('connection');
-  c.textContent=text;c.className='status '+(kind||'');
+  c.innerHTML='<i></i>'+text;c.className='status '+(kind||'');
   document.getElementById('wakeBanner').classList.toggle('show', kind==='wake');
 }
 async function fetchHealth(timeout=8000){
@@ -628,16 +799,13 @@ async function setConnection(){
   let h=await fetchHealth(9000);
   if(!h.ok && (h.ms>2000 || h.error)){
     setStatus('Сервер просыпается…','wake');
-    for(let i=0;i<8 && !h.ok;i++){
-      await new Promise(r=>setTimeout(r,3000));
-      h=await fetchHealth(12000);
-    }
+    for(let i=0;i<8 && !h.ok;i++){await new Promise(r=>setTimeout(r,3000));h=await fetchHealth(12000);}
   }
   if(!h.ok){healthState={ready:false};setStatus('Нет связи','bad');return;}
   if(h.ready && h.gemini==='ok'){healthState={ready:true,model:h.model};setStatus('Готов','ok');return;}
-  if(h.configured && (h.gemini==='checking' || !h.ready && !h.lastError)){healthState={ready:false};setStatus('Проверка Gemini…','wake');return;}
+  if(h.configured && (h.gemini==='checking' || !h.ready && !h.lastError)){healthState={ready:false};setStatus('Подключение…','wake');return;}
   if(h.configured){healthState={ready:false,err:h.lastError};setStatus('Gemini недоступен','bad');return;}
-  healthState={ready:false};setStatus('Нужен API-ключ','warn');
+  healthState={ready:false};setStatus('Нужен ключ','warn');
 }
 window.addEventListener('online',setConnection);window.addEventListener('offline',setConnection);
 
@@ -658,13 +826,29 @@ async function prepareImage(file){
 document.getElementById('chatImageInput').addEventListener('change',async e=>{
   const f=e.target.files[0];if(!f)return;
   try{pendingImage=await prepareImage(f);document.getElementById('chatImagePreview').src=pendingImage.preview;document.getElementById('chatImageWrap').classList.remove('hidden');}
-  catch(err){addBubble(err.message,'ai',{error:true});clearChatImage();}
+  catch(err){const {msg,bubble}=addMessage('ai');msg.classList.add('error');bubble.textContent=err.message;clearChatImage();}
 });
 
-async function readSSE(response, onDelta){
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){const {msg,bubble}=addMessage('ai');msg.classList.add('error');bubble.textContent='Голосовой ввод в этом браузере недоступен. На Android Chrome он обычно работает.';return;}
+  if(recognizing && window._rec){window._rec.stop();return;}
+  const rec=new SR(); window._rec=rec;
+  rec.lang='ru-RU'; rec.interimResults=true;
+  rec.onstart=()=>{recognizing=true;document.getElementById('micBtn').style.color='var(--cyan)';};
+  rec.onend=()=>{recognizing=false;document.getElementById('micBtn').style.color='';};
+  rec.onerror=()=>{recognizing=false;document.getElementById('micBtn').style.color='';};
+  rec.onresult=ev=>{
+    let t=''; for(const r of ev.results) t+=r[0].transcript;
+    document.getElementById('q').value=t;
+  };
+  rec.start();
+}
+
+async function readSSE(response, onDelta, onSources){
   const reader=response.body.getReader();
   const decoder=new TextDecoder();
-  let buf='', full='', error=null, doneReply=null;
+  let buf='', full='', error=null, doneReply=null, sources=[];
   while(true){
     const {value,done}=await reader.read();
     if(done) break;
@@ -676,10 +860,11 @@ async function readSSE(response, onDelta){
       let data;try{data=JSON.parse(line);}catch{continue;}
       if(data.delta){full+=data.delta;onDelta(full);}
       if(data.reply){doneReply=data.reply;onDelta(data.reply);}
+      if(data.sources){sources=data.sources;if(onSources)onSources(sources);}
       if(data.error) error=data.error;
     }
   }
-  return {text:(doneReply||full).trim(), error};
+  return {text:(doneReply||full).trim(), error, sources};
 }
 
 async function send(){
@@ -687,10 +872,11 @@ async function send(){
   if(!q && !pendingImage) return;
   const imageToSend=pendingImage;
   const shown=q||(imageToSend?'Посмотрите фотографию приборной панели.':'');
-  addBubble(shown+(imageToSend?' 📷':''),'user');
+  const user=addMessage('user'); user.bubble.textContent=shown+(imageToSend?' 📷':'');
   el.value=''; el.style.height='auto'; clearChatImage();
   const btn=document.getElementById('sendBtn'); btn.disabled=true;
-  const typing=addBubble('<span class="typing"><i></i><i></i><i></i></span>','ai',{html:true});
+  const ai=addMessage('ai');
+  ai.bubble.innerHTML='<span class="typing"><i></i><i></i><i></i></span>';
   try{
     if(!navigator.onLine) throw new Error('offline');
     const payload={
@@ -715,30 +901,31 @@ async function send(){
       throw new Error(data.error||'Сервер временно недоступен.');
     }
     const ctype=r.headers.get('content-type')||'';
-    let reply='';
+    let reply='', sources=[];
     if(ctype.includes('text/event-stream')){
-      const result=await readSSE(r, text=>{typing.classList.remove('error');typing.textContent=text;document.getElementById('chatbox').scrollTop=document.getElementById('chatbox').scrollHeight;});
+      const result=await readSSE(r, text=>{setBubbleText(ai.bubble,text,true);ai.box.scrollTop=ai.box.scrollHeight;}, src=>{sources=src;});
       if(result.error && !result.text) throw new Error(result.error);
-      reply=result.text;
-      if(result.error && result.text) addBubble(result.error,'ai',{error:true});
+      reply=result.text; sources=result.sources||sources;
+      if(result.error && result.text){const e=addMessage('ai');e.msg.classList.add('error');e.bubble.textContent=result.error;}
     }else{
       const data=await r.json().catch(()=>({}));
       if(data.error && !data.reply) throw new Error(data.error);
-      reply=data.reply||'';
-      typing.textContent=reply;
+      reply=data.reply||''; sources=data.sources||[];
+      setBubbleText(ai.bubble,reply,true);
     }
     if(!reply) throw new Error('Модель не вернула текстовый ответ. Попробуйте ещё раз.');
-    typing.textContent=reply;
+    setBubbleText(ai.bubble,reply,true);
+    addSources(ai.msg, sources);
     chatHistory.push({role:'user',text:shown},{role:'model',text:reply});
     chatHistory=chatHistory.slice(-12);
     setConnection();
   }catch(err){
     const local=answer(q||'фото');
     const msg=err.message==='offline'
-      ?'Сейчас нет интернета. Перехожу в офлайн-режим. '+(imageToSend?'Фото не анализировалось и никуда не отправлялось. Подключитесь к интернету, чтобы распознать изображение. ':'')+'\n\n'+local
-      : (err.message||'Не удалось связаться с Gemini.')+'\n\nОфлайн-подсказка: '+local;
-    typing.classList.add('error');
-    typing.textContent=msg;
+      ?'Сейчас нет интернета. Перехожу в офлайн-режим.\n\n'+local
+      : (err.message||'Не удалось связаться с Gemini.')+'\n\n'+local;
+    ai.msg.classList.add('error');
+    setBubbleText(ai.bubble,msg,true);
   }finally{btn.disabled=false;}
 }
 const qEl=document.getElementById('q');
@@ -751,6 +938,7 @@ document.getElementById('photoInput').addEventListener('change',e=>{const f=e.ta
 const today=new Date().toISOString().slice(0,10);
 document.getElementById('fuelDate').value=today;
 document.getElementById('svcDate').value=today;
+document.body.classList.add('chat-open');
 loadProfile();
 loadKnowledgeBase();
 renderFuel();

@@ -1,4 +1,4 @@
-const CACHE = 'k5-ai-shell-v6';
+const CACHE = 'k5-ai-shell-v7';
 const SHELL = [
   '/',
   '/manifest.webmanifest',

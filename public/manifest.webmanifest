@@ -3,9 +3,9 @@
   "short_name": "NATCAR K5",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0b1020",
-  "theme_color": "#333B6A",
-  "description": "Помощник водителя NATCAR по КАМАЗ К5: чат, справочник, учёт ТО и топлива",
+  "background_color": "#0c0d10",
+  "theme_color": "#0c0d10",
+  "description": "Помощник водителя NATCAR по КАМАЗ К5: чат по открытым источникам, справочник, учёт ТО и топлива",
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
